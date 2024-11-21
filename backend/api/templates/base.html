@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>{% block title %}weblog{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <style>
+    .header-container {
+      display: flex;
+      flex:0 0 auto;
+      width:100%;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #051d6b; }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin:auto;
+      background-color:#FFFFE6;
+      margin-left:10px;
+    
+  }
+  
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color:white;
+      color: black;
+      border:1px black solid;
+      min-width: 150px;
+      min-height:20px;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+  }
+
+  .dropdown-menu a {
+      padding: 8px 8px;
+      color:black;
+      text-decoration: none;
+      display: block;
+      text-align:center;
+  }
+
+  .dropdown:hover .dropdown-menu {
+      display: block;
+  }
+</style>
+</head>
+
+<body>
+    <header>
+        <div style="background-color:#051d6b; height:50px;width:100%" class="header-container">
+            <div class="logo">           
+                <img style="width:100px;height:53px" src="{% static 'images/logo-weblog.png' %}" alt="Logo">
+            </div>
+            <nav>             
+                <ul style="color:rgb(183, 115, 6)" class="nav-links">
+                    <li><a href="{% url 'trang_chu' %}">Trang Chủ</a></li>
+                    <li class="dropdown">
+                      <a href="{%url 'trang' %}" class="dropdown-toggle">Trang</a>
+                      <div class="dropdown-menu">
+                          <a href="{% url 'vechungtoi'%}">Về chúng tôi</a>
+                          <a href="{% url 'lienhe'%}">Liên hệ</a>
+                      </div>
+                    </li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle">Bảng ĐK</a>
+                      <div class="dropdown-menu">
+                          <a href="{% url 'baiviet' %}">Bài viết</a>
+                          <a href="{% url 'add_post' %}">Thêm bài đăng</a>
+                          <a href="#">Bình luận</a>
+                          <a href="#">Thông báo</a>
+                          <a href="{% url 'profile' %}"> Hồ sơ</a>
+                      </div>
+                    </li>
+                    <li><a href="{% url "catalog" %}">Catalog</a></li>            
+                    <button style="border-radius:8px;background-color:orange"><li><a style='border-radius:2px;color:black;box-shadow: 0 4px 6px rgba(0, 0, 0, 2)' href="{% url 'register' %}">Đăng ký</a></li></button>
+                    <button style="border-radius:8px;background-color:orange"><li><a style='border-radius:2px;color:black;box-shadow: 0 4px 6px rgba(0, 0, 0, 2)' href="{% url 'login' %}">Đăng nhập</a></li></button>                    
+                </ul>
+            </nav>
+            <div class="search-bar" style="color:white">
+              <input id="search" type="Text" style="background:#ffffe6;border-radius:8px; padding:2px;width:200px" placeholder="Tìm kiếm...">    
+              <button type="submit" class="btn btn-primary" style="border:black;background-color:orange;border-radius:10px;height:30px;width:68px;color:black;text-align:center;padding:4px;box-shadow:0px 0px 0px rgba(0,0,0,2)">search</button> 
+            </div>
+        </div>
+    </header>
+
+       {%block content%}
+        <body>
+          <h1 style="text-align:center;margin-top:300px">Wellcome to my website</h1>
+        </body>
+       {%endblock%}
+
+    <footer style=" mt:50;
+                        background-color: #051d6b; 
+                        color: white; padding-top: 10px;
+                        padding: 5px 10px;margin-top: 0px;
+                        margin: 0; 
+                        position: fixed; 
+                        bottom: 0;
+                        left: 0;width: 100%;
+                        height:110px;
+                        font-size:10px;
+                        display:none;
+                        "
+                  >
+
+        <div style="display: flex;
+                      justify-content: space-between;
+                      align-items: flex-start;">
+
+              
+            
+              <div style="margin-left:30px" >
+                <h3 style="color: #f39018;">Thông tin địa chỉ</h3>
+                <p> Địa chỉ: Xa lộ Hà Nội, Phường Linh Trung,<br>
+                  Quận Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam</p>
+                <p>Email: <a href="mailto:anhthan@coca-cola.com" style="color: #f39018;">anhthan@coca-cola.com</a></p>
+                <p>Hotline: 1900 5555 84</p>
+              </div>
+
+              <div style="margin:center">
+                <h3 style="color: #f39018;">About us</h3>
+                <p>Địa chỉ: Xa lộ Hà Nội, Phường Linh Trung,<br>
+                  Quận Thủ Đức, Thành phố Hồ Chí Minh,
+                  Việt Nam</p>
+                <p>Email: <a href="mailto:anhthan@coca-cola.com" style="color: #f39018;">anhthan@coca-cola.com</a></p>
+                <p>Hotline: 1900 5555 84</p>
+              </div>
+          
+              <div style="margin-right:50px">
+                <h3 style="color: #f39018;">Thông tin liên hệ</h3>
+                <p>Địa chỉ: Xa lộ Hà Nội, Phường Linh Trung,<br>
+                  Quận Thủ Đức, Thành phố Hồ Chí Minh,
+                  Việt Nam</p>
+                <p>Email: <a href="mailto:anhthan@coca-cola.com" style="color: #f39018;">anhthan@coca-cola.com</a></p>
+                <p>Hotline: 1900 5555 84</p>
+              </div>
+          
+        </div>
+      </footer>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0; 
+    }
+
+    .profile-container{
+        padding:10px;
+    }
+
+    .profile-header{
+
+    }
+
+    img {
+        min-width:50px;
+    }
+</style>
+<div class="profile-container">
+    <div class="profile-header">
+        <img src="/media/{{ profile.image }}" alt="{{ profile.full_name }}" class="profile-img">
+        <h2>{{ profile.full_name }}</h2>
+        <p>{{ profile.bio }}</p>
+        <p>Country: {{ profile.country }}</p>
+        <div class="social-links">
+            {% if profile.facebook %}
+                <a href="{{ profile.facebook }}" target="_blank">Facebook</a>
+            {% endif %}
+            {% if profile.twitter %}
+                <a href="{{ profile.twitter }}" target="_blank">Twitter</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="profile-posts">
+        <h3>Posts by {{ profile.user.username }}</h3>
+        {% if user_posts %}
+            <ul>
+                {% for post in user_posts %}
+                    <li>
+                        <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                        <span>{{ post.date|date:"M d, Y" }}</span>
+                        <span>{{ post.view }} views</span>
+                        <span>{{ post.likes.count }} likes</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No posts available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

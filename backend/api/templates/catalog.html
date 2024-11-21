@@ -1,0 +1,36 @@
+
+
+{% block content%}
+<body>
+    <style type="text/css">
+        .slider-swiper{
+          loop: true;
+          grabCursor:true;
+          spacebetween:30px;
+        }
+        .pagination{
+          el:"swiper-pagination";
+          clickable:true;
+          dynamicBullets:true;
+        }
+
+        .navigation{
+          nextE1:".swiper-button-next";
+          prevE1:"swiper-button-prev";
+        }
+
+
+    </style>
+  <body>
+    <div class="slider-swiper">
+          <div class="pagination">
+            <div class='navigation'>
+              <p>welcome to my blog</p>
+              <input type="text" placeholder="Username">
+            </div>
+          </div>
+    </div>
+
+</body>
+
+{%endblock%}

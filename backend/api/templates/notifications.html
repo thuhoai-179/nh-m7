@@ -1,0 +1,11 @@
+<h1>Thông báo</h1>
+<ul>
+    {% for notification in notifications %}
+        <li>
+            <strong>{{ notification.type }}</strong> - {{ notification.post.title }}
+            <small>{{ notification.date }}</small>
+        </li>
+    {% empty %}
+        <li>Không có thông báo mới.</li>
+    {% endfor %}
+</ul>

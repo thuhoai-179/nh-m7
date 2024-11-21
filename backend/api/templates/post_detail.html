@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; 
+}
+.container{
+    border:2px solid #ccc;
+    min-height:880px;
+    height:auto;
+    background: linear-gradient(to top, #f9d8d8, #cfefff);
+}
+h2{
+    color:orange;
+
+}
+.custome{
+    width:1100px;
+    min-height:300px;
+    border:1px black solid;
+    background-color:white;
+    border-radius:5px;
+    padding:10px;
+}
+p{
+    border:3px black solid;
+    border-radius:5px;
+    width:160px;
+    padding:5px;
+  
+}
+.btn{
+    margin-top:10px;
+    border:2px solid black;
+    border-radius:5px;
+    background:linear-gradient(to top, #f9d8d8, #cfefff);
+
+
+}
+</style>
+<div class='container'>
+    <button type='submit' class='btn'><a href="{% url 'baiviet'%}">Back</a></button>
+    <h2>{{ post.title }}</h2>
+    <p class='custome'><strong> Nội Dung: </strong>{{ post.description }}</p>
+    <p><strong>Thể loại:</strong> {{ post.category.title }}</p>
+    <p><strong>Thẻ:</strong> {{ post.tags }}</p>
+    <p><strong>Lượt xem:</strong> {{ post.view }}</p>
+
+    <h3>Bình luận:</h3>
+    <ul class='custome'>
+        {% for comment in comments %}
+        <li>
+            <strong>{{ comment.name }}</strong> - {{ comment.date }}
+            <p>{{ comment.comment }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{%endblock%}

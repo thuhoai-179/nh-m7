@@ -1,0 +1,62 @@
+{%extends 'base.html'%}
+
+{%block content%}
+  
+<style type="text/css">
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0; 
+    }
+    h3{
+        border:1px solid #ccc;
+        border-radius:8px;
+        flex: 0,0 auto;
+        box-shadow: 0 2px 4px rgba(0,0,0,2);
+    }
+    .container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 30px; 
+        margin-top:20px;
+        margin-left:20px;
+        margin-right:20px;
+        padding: 10px;  
+    }
+    
+    .card {
+        text-align: center;
+        width:280px;
+        height:260px;
+
+        flex: 0 0 auto;
+        padding: 10px;
+        border: 1px solid #ccc; 
+        background: linear-gradient(to top, #f9d8d8, #cfefff);
+        border-radius: 8px; 
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 2); 
+    }
+    .custom{
+        border:1px solid #ccc;
+        border-radius:8px;
+        margin-left:50px;
+        margin-right:50px;
+        margin-top:50px;
+
+        
+    }
+    
+</style>
+<div class='container'>
+            {% for i in baiviet %}
+                <div class='card' >
+                    <h3>{{i.title}}</h3>
+                    <p>Category:{{i.category}}</p>
+                    <p>View:{{i.view}}</p>
+                    <p>Like:{{i.likes.count}}</p>
+                    <button class='custom'><a href="{% url 'post_detail' i.id %}">Xem nội dung</a></button>
+                </div>
+
+            {% endfor%}
+                
+</div>
+{%endblock%}
