@@ -1,0 +1,26 @@
+
+
+
+<h3>Comments:</h3>
+{% for i in comments %}
+    <div style="margin-left: {{ comment.parent|default:0|add:1 }}em;">
+        <p><strong>{{ comment.name }}</strong>: {{ comment.comment }}</p>
+        <p><small>{{ comment.date }}</small></p>
+
+        <!-- Reply Form -->
+        <button onclick="toggleReplyForm({{ comment.id }})">Reply</button>
+        <form method="POST" id="reply-form-{{ comment.id }}" style="display:none;">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            <button type="submit">Submit Reply</button>
+        </form>
+
+        <!-- Display Replies -->
+        {% for reply in comment.replies.all %}
+            <div style="margin-left: 2em;">
+                <p><strong>{{ reply.name }}</strong>: {{ reply.comment }}</p>
+                <p><small>{{ reply.date }}</small></p>
+            </div>
+        {% endfor %}
+    </div>

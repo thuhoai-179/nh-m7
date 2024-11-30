@@ -24,24 +24,22 @@ h2{
     border-radius:5px;
     padding:10px;
 }
-p{
-    border:3px black solid;
-    border-radius:5px;
-    width:160px;
-    padding:5px;
-  
-}
-.btn{
-    margin-top:10px;
+
+.cus{
     border:2px solid black;
     border-radius:5px;
     background:linear-gradient(to top, #f9d8d8, #cfefff);
-
-
+    margin-left:1000px;
+    margin-top:5px;
+}
+.demo{
+    display:start;
 }
 </style>
 <div class='container'>
-    <button type='submit' class='btn'><a href="{% url 'baiviet'%}">Back</a></button>
+    <div class='demo'>
+        <button type='submit' class='cus'><a href="{% url 'edit_post' post.id %}">Chỉnh sửa</a></button>
+    </div>
     <h2>{{ post.title }}</h2>
     <p class='custome'><strong> Nội Dung: </strong>{{ post.description }}</p>
     <p><strong>Thể loại:</strong> {{ post.category.title }}</p>
@@ -49,13 +47,13 @@ p{
     <p><strong>Lượt xem:</strong> {{ post.view }}</p>
 
     <h3>Bình luận:</h3>
-    <ul class='custome'>
+    <div class='custome'>
         {% for comment in comments %}
         <li>
             <strong>{{ comment.name }}</strong> - {{ comment.date }}
             <p>{{ comment.comment }}</p>
         </li>
         {% endfor %}
-    </ul>
+    </div>
 </div>
 {%endblock%}

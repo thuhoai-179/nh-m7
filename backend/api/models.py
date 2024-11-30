@@ -112,7 +112,7 @@ class Post(models.Model):
     
     class Meta:
         verbose_name_plural = "Post"
-
+    
     def save(self, *args, **kwargs):
         if self.slug == "" or self.slug == None:
             self.slug = slugify(self.title) + "-" + shortuuid.uuid()[:2]

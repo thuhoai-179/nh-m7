@@ -11,7 +11,7 @@
           display: grid;
           grid-template-columns: repeat(5, 1fr); 
           row-gap: 20px;
-
+         
           margin-top:30px;
           margin-left:10px;
           margin-right:10px;
@@ -24,11 +24,10 @@
             min-height:250px;
             aspect-ratio: 16/9;
             background-color: #f2f2f2;
-            border:1px black solid;
+            border:2px black solid;
             border-radius: 10px;
             grid-template-columns: repeat(6, 1fr); 
             gap: 30px; 
-            border:2px black solid;
             display:inline-block;
             align-items: center;
             margin-left:20px;
@@ -62,7 +61,6 @@
             top: 0;
             left: 0;
             width: 100%;
-            text-align:center;
             height: 100%;
             padding: 20px;
             box-sizing: border-box;
@@ -91,9 +89,7 @@
           .card__description {
             margin: 10px 0 10px;
             font-size: 12px;
-            color:black;
-            textalign:left;
-            margin-left:3px;
+            color: #777;
             line-height: 1.4;
           }
           
@@ -127,22 +123,15 @@
         font-weight:bold;
         text-align:center;
         margin:auto;
+        flex: 0 0 auto;
         border:1px black solid;
         border-radius:8px;
         background-color:powderblue;
     }
-    .ct{
-      border:1px black solid;
-      height:100px;
-      border-radius:8px;
-      overflow:hidden;
-      flex:0 0 auto;
-      background-color:white;
-    }
 </style>
-<h2> TẤT CẢ BÀI VIẾT </h2>
+<h2> TẤT CẢ DANH MỤC </h2>
 <div class='container'>
-    {%for i in baiviet%}
+    {%for i in categories%}
         <div class="card">
           <p class='custom'>{{i.title}}</p>
             <div class='card_image'>
@@ -151,13 +140,12 @@
               {% endif %}
             </div>
             <div class="card__content">
-              <p class="card__title">{{i.title}}</p>
-              <div class='ct'>
-                <p class="card__description">{{i.description}}</p>
-              </div>
-            <button class="card__button" style='background-color:green;margin-top:30px'><a href="{% url 'post_detail' i.id %}" style='text_decorate:none;color:black'>Xem bài viết</a></button>
-            <button class="card__button secondary" style='background-color:powderblue;margin-top:30px'><a href="{% url 'edit_post' i.id %}" style='text_decorate:none;color:black'>Chỉnh sửa</a></button>
-            <button class="card__button secondary" style='background-color:red;margin-top:30px'><a href="{% url 'post_delete' i.pk %}"style='text_decorate:none;color:black'>Xóa</a></button>
+            <p class="card__title" >{{i.title}}</p>
+            <p class="card__description">{{i.description}}</p>
+            <button class="card__button" style='background-color:green;margin-top:90px'><a href="{% url 'category_post_list' i.id %}" style='text_decorate:none;color:black'>Xem bài viết</a></button>
+            <button class="card__button secondary" style='background-color:powderblue;color:black;margin-top:90px'><a href="{% url 'category_edit' i.pk %}" style='text_decorate:none;color:black'>Chỉnh sửa</a></button>
+            <button class="card__button secondary" style='background-color:red;color:black;margin-top:90px'><a href="{% url 'category_delete' i.pk %}" style='text_decorate:none;color:black'>Xóa</a></button>
+    
             </div>
         </div>
     {%endfor%}

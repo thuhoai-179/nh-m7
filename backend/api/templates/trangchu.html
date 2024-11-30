@@ -9,18 +9,26 @@
         margin: 0;
         padding: 0;
     }
+    h3{background-color:white;}
     
     h2 {
         color: #FFA500; 
         text-align: left;
         margin: 20px 0;
-        
+        margin-left:20px;
+        border: 1px black solid;
+        width:300px;
+        border-radius:8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,2);
+        background-color:white;
+        text-align:center;
+    
     }
     
     #trending-posts, #categories, #popular-posts {
         width: 100%;
         display:wrap;
-    
+        overflow-x:auto;
         margin-left:20px;
         margin-right:20px;
     }
@@ -28,7 +36,8 @@
     .post-grid, .category-grid, .popular-posts-grid {
         display: flex;
         border-radius:8px;
-        gap: 32px;
+        gap:30px;
+    
         overflow:auto;
     }
     
@@ -45,7 +54,7 @@
     }
 
     .post-card img, .category-card img {
-        width: 100%;
+        width: 500px;
         height: 150px;
         object-fit: cover;
     }
@@ -54,9 +63,7 @@
         margin: 10px;
         border:2px white solid;
         box-shadow: 0 5px 8px rgba(0, 0, 0, 2); 
-        border-radius:8px;
-        
-
+        border-radius:8px;       
     }
 
     .pagination {
@@ -73,56 +80,203 @@
     .pagination a:hover {
         color: #333;
     }
+    img.rounded-square {    
+        border: 1px solid black;
+        width:400px;
+        height:200px;
+    }
     .custom{
         border:1px solid #ccc;
         border-radius:8px;
         margin-left:50px;
         margin-right:50px;
-        margin-top:60px;
         
     }
+      .card {
+        position: relative;
+        width: 350px;
+        height:230px;
+        overflow-x:auto;
+        aspect-ratio: 16/9;
+        background-color: #f2f2f2;
+        border:2px black solid;
+        border-radius: 10px;
+        display:inline-block;
+        align-items: center;
+        margin-left:15px;
+        row-gap:10px;
+        white-space: nowrap;
+        justify-content: center;
+        overflow: hidden;
+        perspective: 1000px;
+        box-shadow: 0 0 0 5px #ffffff80;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      .card svg {
+        width: 48px;
+        margin-left:20px;
+        fill: #333;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      .card__image {
+        width: 100%;
+        height: 100%;
+      }
+      
+      .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+      }
+      
+      .card__content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align:center;
+        padding: 20px;
+        box-sizing: border-box;
+        background-color: orange;
+        transform: rotateX(-90deg);
+        transform-origin: bottom;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      
+      .card:hover .card__content {
+        transform: rotateX(0deg);
+      }
+      
+      .card__title {
+        margin: 0;
+        font-size: 20px;
+        color: #333;
+        text-align:center;
+        font-weight: 700;
+      }
+      
+      .card:hover svg {
+        scale: 0;
+      }
+      
+      .card__description {
+        margin: 10px 0 10px;
+        font-size: 12px;
+        color:black;
+        margin-left:5px;
+        line-height: 1.4;
+      }
+      
+      .card__button {
+        padding: 15px;
+        border-radius: 8px;
+        background: #777;
+        border: none;
+        color: white;
+      }
+      
+      .secondary {
+        background: transparent;
+        color: #777;
+        border: 1px solid #777;
+      }
+    .custom{
+      font-weight:bold;
+      text-align:center;
+      margin:auto;
+      border:1px black solid;
+      border-radius:8px;
+      background-color:powderblue;
+  }
+  .ct{
+    border:1px black solid;
+    height:100px;
+    border-radius:8px;
+    overflow:hidden;
+    flex:0 0 auto;
+    background-color:white;
+  }
 </style>
+
 <section id="trending-posts">
-    <h2>Bài Viết Thịnh Hành</h2>
-        <div class="post-grid">
-                {% for post in trending_posts %}           
-                    <div class="post-card">
-                        <h3>{{ post.title }}</h3>
-                        <p>Category:{{post.category.title}}</p>
-                        <p>View:{{post.view}}</p>
-                        <p>Like:{{post.likes.count}}</p>
-                        <button  class='custom'><a href="{% url 'post_detail' post.id %}">Xem nội dung</a></button>
-                    </div>
-        
-                {% endfor %}
+  <h2>Bài Viết Thịnh Hành</h2>
+  <div class='category_card'>
+    {%for i in trending_posts%}
+      <div class="card">
+        <div class='card_image'>
+          <p class='custom'>{{i.title}}</p>
+          {% if i.image %}
+            <img src="{{ i.image.url }}" alt="{{ i.title }}" style="transition: opacity 0.3s ease;width: 100%; height:100%; object-fit: cover;">
+          {% endif %}
         </div>
-        <div class="pagination">
-            {% for page_num in page_range %}
-                <a href="?page={{ page_num }}">{{ page_num }}</a>
-            {% endfor %}
-        </div>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z"></path></svg>
+          <div class="card__content">
+            <p class="card__title" >{{i.title}}</p>
+            <div class='ct'>
+                <p class="card__description">{{i.description}}</p>
+            </div>
+            <button class="card__button" style='background-color:green;margin-top:10px'><a href="{% url 'category_post_list' i.id %}" style='text_decorate:none;color:black'>Xem bài viết</a></button>
+            <button class="card__button secondary" style='background-color:powderblue;color:black;margin-top:10px'><a href="{% url 'edit_post' i.pk %}" style='text_decorate:none;color:black'>Chỉnh sửa</a></button>
+            <button class="card__button secondary" style='background-color:red;color:black;margin-top:10px'><a href="{% url 'post_delete' i.pk %}" style='text_decorate:none;color:black'>Xóa</a></button>
+    
+          </div>
+      
+      </div>
+    {%endfor%}
+  </div>
 </section>
 <section id="categories">
-    <h2>Thể Loại</h2>
-    <div class="category-grid">
-        {% for category in categories %}
-            <div class="category-card">            
-                <p>{{ category.title }}</p>
-                <button  class='custom'><a href="#">Xem chi tiết</a></button>
+  <h2>Thể loại</h2>
+  <div class='category_card'>
+    {%for i in categories%}
+      <div class="card">
+        <div class='card_image'>
+          <p class='custom'>{{i.title}}</p>
+          {% if i.image %}
+            <img src="{{ i.image.url }}" alt="{{ i.title }}" style="transition: opacity 0.3s ease;width: 100%; height:100%; object-fit: cover;">
+          {% endif %}
+        </div>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z"></path></svg>
+          <div class="card__content">
+            <p class="card__title" >{{i.title}}</p>
+            <div class='ct'>
+               <p class="card__description">{{i.description}}</p>
             </div>
-        {% endfor %}
-    </div>
+            <button class="card__button" style='background-color:green;margin-top:10px'><a href="{% url 'category_post_list' i.id %}" style='text_decorate:none;color:black'>Xem bài viết</a></button>
+            <button class="card__button secondary" style='background-color:powderblue;color:black;margin-top:10px'><a href="{% url 'category_edit' i.pk %}" style='text_decorate:none;color:black'>Chỉnh sửa</a></button>
+            <button class="card__button secondary" style='background-color:red;color:black;margin-top:10px'><a href="{% url 'category_delete' i.pk %}" style='text_decorate:none;color:black'>Xóa</a></button>
+    
+          </div>
+      
+      </div>
+    {%endfor%}
 </section>
 <section id="popular-posts">
-    <h2>Bài Viết Phổ Biến</h2> 
-    <div class="popular-posts-grid">
-        {% for post in popular_posts %} 
-            <div class="post-card">
-                <h3>{{ post.title }}</h3>
-                <button  class='custom'><a href="{% url 'post_detail' post.id %}">Xem nội dung</a></button>
-            </div>
-        {% endfor %}
-    </div>
+  <h2>Bài Viết Phổ Biến</h2>
+  <div class='category_card'>
+    {%for i in popular_posts%}
+      <div class="card">
+        <div class='card_image'>
+          <p class='custom'>{{i.title}}</p>
+          {% if i.image %}
+            <img src="{{ i.image.url }}" alt="{{ i.title }}" style="transition: opacity 0.3s ease;width: 100%; height:100%; object-fit: cover;">
+          {% endif %}
+        </div>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 5H4V19L13.2923 9.70649C13.6828 9.31595 14.3159 9.31591 14.7065 9.70641L20 15.0104V5ZM2 3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934ZM8 11C6.89543 11 6 10.1046 6 9C6 7.89543 6.89543 7 8 7C9.10457 7 10 7.89543 10 9C10 10.1046 9.10457 11 8 11Z"></path></svg>
+          <div class="card__content">
+          <p class="card__title">{{i.title}}</p>
+          <div class='ct'>
+              <p class="card__description">{{i.description}}</p>
+          </div>
+          <button class="card__button" style='background-color:green;margin-top:10px'><a href="{% url 'category_post_list' i.id %}" style='text_decorate:none;color:black'>Xem bài viết</a></button>
+          <button class="card__button secondary" style='background-color:powderblue;color:black;margin-top:10px'><a href="{% url 'edit_post' i.pk %}" style='text_decorate:none;color:black'>Chỉnh sửa</a></button>
+          <button class="card__button secondary" style='background-color:red;color:black;margin-top:10px'><a href="{% url 'post_delete' i.pk %}" style='text_decorate:none;color:black'>Xóa</a></button>
+          </div>
+      
+      </div>
+    {%endfor%}
 </section>
 
 

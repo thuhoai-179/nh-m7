@@ -55,7 +55,7 @@
 
 <body>
     <header>
-        <div style="background-color:#051d6b; height:50px;width:100%" class="header-container">
+        <div style="background-color:#051d6b; height:50px;width:auto" class="header-container">
             <div class="logo">           
                 <img style="width:100px;height:53px" src="{% static 'images/logo-weblog.png' %}" alt="Logo">
             </div>
@@ -79,7 +79,18 @@
                           <a href="{% url 'profile' %}"> Hồ sơ</a>
                       </div>
                     </li>
-                    <li><a href="{% url "catalog" %}">Catalog</a></li>            
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle">Danh Mục</a>
+                      <div class="dropdown-menu">
+                        <a href="{% url "catalog" %}">tổng quan</a>
+                        <a href="{% url "danhmuc" %}">Xem danh mục</a>
+                        <a href="{% url 'category_create'%}">Thêm danh mục</a>
+                      </div>
+                    </li>     
+                    <li class="dropdown">
+                      <a href="{% url 'test_code' %}">test code</a>
+  
+                    </li>           
                     <button style="border-radius:8px;background-color:orange"><li><a style='border-radius:2px;color:black;box-shadow: 0 4px 6px rgba(0, 0, 0, 2)' href="{% url 'register' %}">Đăng ký</a></li></button>
                     <button style="border-radius:8px;background-color:orange"><li><a style='border-radius:2px;color:black;box-shadow: 0 4px 6px rgba(0, 0, 0, 2)' href="{% url 'login' %}">Đăng nhập</a></li></button>                    
                 </ul>

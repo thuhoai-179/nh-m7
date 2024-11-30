@@ -42,25 +42,9 @@
     </style>
     <h1 STYLE="text-align:center;color:orange;margin-top:75px;margin-left:2px;"> ĐĂNG KÝ</h1>
     <p STYLE="text-align:center;color:black">Đăng kí tài khoản của bạn</p>
-    <form method="POST">
+    <form method="POST" >
         {% csrf_token %}
-        {{ form.as_p }}
-        <div class=container-fluid >
-         <div class="text-align:center ">
-            <label for="username">Username</lable><br>
-            <input id="username" type="text" placeholder="enter your name"><br>
-
-            <label for="Email">Email</lable><br>
-            <input id="Email" Type="Email" placeholder="enter your email"><br>
-
-            <label for="password">Password</lable><br>
-            <input id="password" Type="password" placeholder="enter your password"><br>
-        
-            <label for="repassword">Reenter password</lable><br>
-            <input id="repassword" Type="password" placeholder="reenter your password"><br>
-            
-            <button style="width:420px;background:orange"type="submit">Register</button>
-         </div>
-        </div> 
+        {{ form.as_p }}          
+        <button style="width:420px;background:orange"type="submit">Register</button>
     </form>
 {%endblock%}
