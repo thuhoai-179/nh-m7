@@ -3,50 +3,35 @@ from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import *
-
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 from django.http import JsonResponse
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 from django.db.models import Sum
 # Restframework
-
 from rest_framework import status
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import generics
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework_simplejwt.tokens import RefreshToken
  
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from datetime import datetime
-
-# Others
-import json
-import random
-
-# Custom Imports
-
 from api import serializer as api_serializer
 from api import models as api_models
 
 # regiter and trang chủ
 
 def index(request):  
+    print(request.user)
     return render(request,"base.html")
 def trangchu(request):
-    trending_posts=Post.objects.all()
+    trending_posts=Post.objects.all().order_by('-view')[:10]
     categories=Category.objects.all()
-    popular_posts=Post.objects.all()
+    popular_posts=Post.objects.all().order_by('-likes')[:10]
     context={
         'trending_posts':trending_posts,
         'categories':categories,
@@ -54,12 +39,31 @@ def trangchu(request):
     }
     return render(request,"trangchu.html",context)
 
+def danhmuc(request):
+    categories=Category.objects.all()
+    return render(request,'danhmuc.html',{'categories':categories})
+
+def test_code(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.user = request.user
+            post.profile = request.user.profile
+            post.save()
+            messages.success(request, 'Bài đăng đã được tạo thành công!')
+            return redirect('post_detail', id=post.id)
+    else:
+        form = PostForm()
+    return render(request, 'test_code.html', {'form': form})
 
 
 def blog(request):
     return render(request,'blog.html')
 def catalog(request):
+
     return render(request,"catalog.html")
+
 def vechungtoi(request):
     return render(request,'vechungtoi.html')
 def lienhe(request):
@@ -69,41 +73,52 @@ def lienhe(request):
 def trang(request):
     return render(request,'trang.html')
 
-
 def register(request):
+    form = RegisterForm(request.POST or None)
     if request.method == 'POST':
-        form = RegisterForm(request.POST)       
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Tài khoản {username} đã được tạo thành công!')
-            return redirect('login')
-    else:
-        form = RegisterForm()
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'Tài khoản {user.username} đã được tạo thành công!')
+            return redirect('login')  # Đảm bảo URL 'login' được định nghĩa
     return render(request, 'register.html', {'form': form})
 
-def login(request):
+def user_login(request):
+    form = AuthenticationForm(data=request.POST or None)
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, email=email, password=password)
-            if user:
-                login(request, user)
-                messages.success(request, f'Chào mừng {user.full_name} quay lại!')
-                return redirect('trang_chu')  
-            else:
-                messages.error(request, 'Email hoặc mật khẩu không chính xác.')
-        else:
-            messages.error(request, 'Có lỗi xảy ra trong quá trình đăng nhập.')
-    else:
-        form = LoginForm()
-    return render(request, 'loggin.html', {'form': form})
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f'Chào mừng {user.username} quay lại!')
+            return redirect('trang_chu')  
+    return render(request, 'login.html', {'form': form})
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
 
 def baiviet(request):
     baiviet=Post.objects.all()
     return render(request,'baiviet.html',{'baiviet':baiviet}) 
+
+def post_details(request, id):
+    post = get_object_or_404(Post, id=id)
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.post = post
+            instance.save()
+            return redirect('baivietchitiet', id=post.id)
+
+    context = {
+        'post': post,
+        'form': form,
+    }
+    return render(request, 'baivietchitiet.html', context)
+
 
 
 @login_required
@@ -116,7 +131,7 @@ def add_post(request):
             post.profile = request.user.profile
             post.save()
             messages.success(request, 'Bài đăng đã được tạo thành công!')
-            return redirect('baiviet', slug=post.slug)
+            return redirect('post_detail', id=post.id)
     else:
         form = PostForm()
     return render(request, 'add_post.html', {'form': form})
@@ -132,13 +147,98 @@ def post_detail(request,id):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
+            comment.user = request.user
+            reply_id = request.POST.get('reply_id')
+
+            if reply_id:
+                comment.reply = Comment.objects.get(id=reply_id)
             comment.save()
-            messages.success(request, 'Bình luận của bạn đã được thêm!')
+
+            messages.success(request, 'Bình luận đã được thêm thành công!')
             return redirect('post_detail', id=post.id)
     else:
         form = CommentForm()
+
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'form': form})
 
+@login_required
+def edit_post(request,id):
+    post = get_object_or_404(Post, id=id)   
+    if request.method == "POST":
+        form = Edit_PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            form.save()
+            return redirect("baiviet") 
+    else:
+        form = Edit_PostForm(instance=post)
+    
+    return render(request, "edit_post.html", {"form": form, "post": post})
+
+@login_required
+def like_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return JsonResponse({'liked': liked, 'likes_count': post.likes.count()})
+
+def category_post_list(request,id):
+    category = get_object_or_404(Category, id=id)
+    posts = Post.objects.filter(category=category, status="Active").order_by("-date")   
+    context = {
+        'category': category,
+        'posts': posts,
+    }
+    return render(request, 'category_post_list.html', context)
+
+
+
+@login_required
+def category_create(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category created successfully!")
+            return redirect('danhmuc')
+    else:
+        form = CategoryForm()
+    return render(request, 'category_create.html', {'form': form, 'action': 'Create'})
+
+@login_required
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, "Category deleted successfully!")
+        return redirect('danhmuc')
+    return render(request, 'category_confirm_delete.html', {'category': category})
+
+@login_required
+def  post_delete(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        post.delete()
+        messages.success(request, "Post deleted successfully!")
+        return redirect('baiviet')
+    return render(request, 'post_confirm_delete.html', {'post': post})
+
+
+@login_required
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category updated successfully!")
+            return redirect('danhmuc')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'category_edit.html', {'form': form, 'action': 'Edit'})   
     
 def user_profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
@@ -186,47 +286,48 @@ def page(request):
 def blog(request):
     return render(request, 'blog.html')
 
-def register(request):
-    return render(request, 'register.html')
-
-#------------------------------------------------
-class MyTokenObtainPairView(TokenObtainPairView):
-    # Here, it specifies the serializer class to be used with this view.
-    serializer_class = api_serializer.MyTokenObtainPairSerializer
-
-# This code defines another DRF View class called RegisterView, which inherits from generics.CreateAPIView.
-class RegisterView(generics.CreateAPIView):
-    # It sets the queryset for this view to retrieve all User objects.
-    queryset = api_models.User.objects.all()
-    # It specifies that the view allows any user (no authentication required).
-    permission_classes = (AllowAny,)
-    # It sets the serializer class to be used with this view.
-    serializer_class = api_serializer.RegisterSerializer
     
-    
-class ProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = (AllowAny,)
-    serializer_class = api_serializer.ProfileSerializer
+class LikePostAPIView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'post_id': openapi.Schema(type=openapi.TYPE_STRING),
+            },
+        ),
+    )
+    def post(self, request):
+        try:
+            # Lấy dữ liệu từ request
+            user_id = request.data.get('user_id')
+            post_id = request.data.get('post_id')
 
-    def get_object(self):
-        user_id = self.kwargs['user_id']
+            # Kiểm tra dữ liệu đầu vào
+            if not user_id or not post_id:
+                raise ValidationError("Both 'user_id' and 'post_id' are required.")
 
-        user = api_models.User.objects.get(id=user_id)
-        profile = api_models.Profile.objects.get(user=user)
-        return profile
+            # Truy vấn người dùng và bài viết
+            user = get_object_or_404(api_models.User, id=user_id)
+            post = get_object_or_404(api_models.Post, id=post_id)
 
-class CategoryListAPIView(generics.ListAPIView):
-    serializer_class = api_serializer.CategorySerializer
-    permission_classes = [AllowAny]
+            # Kiểm tra trạng thái thích/bỏ thích
+            if post.likes.filter(id=user.id).exists():
+                # Nếu đã thích, bỏ thích
+                post.likes.remove(user)
+                return Response({"message": "Post Disliked"}, status=status.HTTP_200_OK)
+            else:
+                # Nếu chưa thích, thêm lượt thích
+                post.likes.add(user)
 
-    def get_queryset(self):
-        return api_models.Category.objects.all()
+                # Tạo thông báo cho tác giả bài viết
+                api_models.Notification.objects.create(
+                    user=post.user,
+                    post=post,
+                    type="Like",
+                )
 
-class PostCategoryListAPIView(generics.ListAPIView):
-    serializer_class = api_serializer.PostSerializer
-    permission_classes = [AllowAny]
+                return Response({"message": "Post Liked"}, status=status.HTTP_201_CREATED)
 
-    def get_queryset(self):
-        category_slug = self.kwargs['category_slug'] 
-        category = api_models.Category.objects.get(slug=category_slug)
-        return api_models.Post.objects.filter(category=category, status="Active")
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

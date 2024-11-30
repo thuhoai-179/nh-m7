@@ -10,7 +10,7 @@
         min-height:880px;
         height:auto;
         background: linear-gradient(to top, #f9d8d8, #cfefff);
-    }
+        }
     h2{
         boder:1px #ccc solid;
         border-radius:0px;
@@ -30,9 +30,12 @@
     .btn{
         border:2px solid black;
         border-radius:5px;
-        background:linear-gradient(to top, #f9d8d8, #cfefff);
-        justify-content:center;
-    
+        margin:auto;    }
+    .ct{
+        margin:auto;
+        gap:20px;
+        text-align:center;
+        margin-top:150px;
     }
 
 </style>
@@ -41,7 +44,10 @@
     <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn">Tạo bài đăng</button>  
+            <div class='ct'>
+                <button type="submit" class="btn" style="background-color:orange">Tạo bài đăng</button>  
+                <button type="submit" class="btn" style="background-color:silver"><a href="{% url 'baiviet' %}" style='color:black'>Hủy</a></button>
+            </div>
     </form>
 </div>
 {% endblock %}

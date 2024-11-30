@@ -106,23 +106,32 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name="likes_user")
     slug = models.SlugField(unique=True, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
+
+    def comment_count(self):
+        return self.comment_set.all().count()
+
+    def comments(self):
+        return self.comment_set.all()
     
     def __str__(self):
         return self.title
-    
+
     class Meta:
         verbose_name_plural = "Post"
-
+    
     def save(self, *args, **kwargs):
         if self.slug == "" or self.slug == None:
             self.slug = slugify(self.title) + "-" + shortuuid.uuid()[:2]
         super(Post, self).save(*args, **kwargs)
-    
-    def comments(self):
-        return Comment.objects.filter(post=self).order_by("-id")
+
+
+
+
+
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     comment = models.TextField()
@@ -130,8 +139,8 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.post.title} - {self.name}"
-    
+        return f'{self.user} - {self.comment[:20]}'
+
     class Meta:
         verbose_name_plural = "Comment"
         

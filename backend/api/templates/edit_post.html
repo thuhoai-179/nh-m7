@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0; 
+    }
+    .container{
+        border:2px solid #ccc;
+        min-height:880px;
+        height:auto;
+        background: linear-gradient(to top, #f9d8d8, #cfefff);
+    }
+    h2{
+        color:orange;
+        border:1px black solid;
+        border-radius:8px;
+        box-shadow:0 4px 8px rgba(0,0,0,2);
+        background-color:white;
+        width:400px;
+        text-align:center;
+        margin: auto;
+        margin-top:5px;
+    
+    }
+    .custome{
+        width:1100px;
+        min-height:300px;
+        border:1px black solid;
+        background-color:white;
+        border-radius:5px;
+        padding:10px;
+    }
+</style>
+<div class='container'>
+    <h2>SỬA BÀI VIẾT</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }} 
+        <button type="submit" class="btn btn-success">save</a></button>
+        <a href="{% url 'baiviet' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
