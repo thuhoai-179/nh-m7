@@ -1,11 +1,40 @@
-<h1>Thông báo</h1>
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    li {
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+    }
+</style>
+<h2>Thông báo</h2>
+
 <ul>
     {% for notification in notifications %}
-        <li>
-            <strong>{{ notification.type }}</strong> - {{ notification.post.title }}
-            <small>{{ notification.date }}</small>
-        </li>
+    <li>
+        {% if notification.type == "Like" %}
+        <strong>{{ notification.initiator.username }}</strong> đã thích bài viết
+        <strong>{{ notification.post.title }}</strong>.
+        {% elif notification.type == "Comment" %}
+        <strong>{{ notification.initiator.username }}</strong> đã bình luận vào bài viết
+        <strong>{{ notification.post.title }}</strong>.
+        {% elif notification.type == "Bookmark" %}
+        <strong>{{ notification.initiator.username }}</strong> đã đánh dấu bài viết
+        <strong>{{ notification.post.title }}</strong>.
+        {% endif %}
+        <br><small>Ngày: {{ notification.date }}</small>
+    </li>
     {% empty %}
-        <li>Không có thông báo mới.</li>
+    <p>Không có thông báo nào.</p>
     {% endfor %}
 </ul>
+{% endblock %}

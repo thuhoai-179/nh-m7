@@ -30,6 +30,9 @@ urlpatterns = [
     path('danhmuc/',api_views.danhmuc,name='danhmuc'),
     path('test_code/',api_views.test_code,name='test_code'),
     path('post/like-post/', api_views.LikePostAPIView.as_view()),
+    path('post/<int:id>/', api_views.post_detail, name='post_detail'),  # Chỉnh lại tên tham số nếu cần
+    path('post/<int:post_id>/like/', api_views.like_post, name='like_post'),
+    path('trangchu/thongbao/', api_views.notifications, name='notifications'),
 ]
 
 

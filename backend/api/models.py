@@ -107,11 +107,11 @@ class Post(models.Model):
     slug = models.SlugField(unique=True, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
-    def comment_count(self):
-        return self.comment_set.all().count()
+    def comment_count(self):#COMMENT
+        return self.comments.all().count()
 
-    def comments(self):
-        return self.comment_set.all()
+    def comments(self):#COMMENT
+        return self.comments.all()
     
     def __str__(self):
         return self.title
@@ -129,20 +129,22 @@ class Post(models.Model):
 
 
 
-class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+class Comment(models.Model):#model thêm user và parent và date hàm def tả về hiển thị
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     comment = models.TextField()
-    reply = models.TextField(null=True, blank=True)
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies'
+    )  # Liên kết đến chính nó để quản lý phản hồi
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.user} - {self.comment[:20]}'
 
     class Meta:
-        verbose_name_plural = "Comment"
+        verbose_name_plural = "Comments"
         
 class Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -163,7 +165,7 @@ class Notification(models.Model):
     type = models.CharField(max_length=100, choices=NOTI_TYPE)
     seen = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
-
+    initiator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="initiated_notifications", null=True, blank=True)
     class Meta:
         verbose_name_plural = "Notification"
     

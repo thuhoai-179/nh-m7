@@ -6,91 +6,124 @@
         font-family: Arial, sans-serif;
         margin: 0;
     }
-    .container{
-        border:2px solid #ccc;
-        min-height:880px;
-        height:auto;
+    .container {
+        border: 2px solid #ccc;
+        min-height: 880px;
+        height: auto;
         background: linear-gradient(to top, #f9d8d8, #cfefff);
     }
-    h2{
-        color:orange;
-
+    h2 {
+        color: orange;
     }
-    .custome{
-        width:1100px;
-        min-height:300px;
-        border:1px black solid;
-        background-color:white;
-        border-radius:5px;
-        padding:10px;
-    }
-
-    .cus{
-        border:2px solid black;
-        border-radius:5px;
-        background:linear-gradient(to top, #f9d8d8, #cfefff);
-        margin-left:1000px;
-        margin-top:5px;
-    }
-    .demo{
-        display:start;
+    .custome {
+        width: 1100px;
+        min-height: 300px;
+        border: 1px black solid;
+        background-color: white;
+        border-radius: 5px;
+        padding: 10px;
     }
 </style>
-<div class='container'>
-    <div class='demo'>
-        <button type='submit' class='cus'><a href="{% url 'edit_post' post.id %}">Chỉnh sửa</a></button>
-    </div>
+<div class="container">
     <h2>{{ post.title }}</h2>
-    <p class='custome'><strong> Nội Dung: </strong>{{ post.description }}</p>
+    <p class="custome"><strong>Nội Dung:</strong> {{ post.description }}</p>
     <p><strong>Thể loại:</strong> {{ post.category.title }}</p>
     <p><strong>Thẻ:</strong> {{ post.tags }}</p>
     <p><strong>Lượt xem:</strong> {{ post.view }}</p>
-    <h3>Bình luận:</h3>
-    <p class="mt-3">
-        <a class="" data-toggle="collapse" href="#collapseComments" role="button" aria-expanded="false"
-           aria-controls="collapseComments">
-            Comments: {{ post.comment_count }}
-        </a>
-        <a>Comments: {{comment}}</a>
-    </p>
-    <div class="collapse" id="collapseComments">
-        <div style="height: 250px; overflow-y: auto;" class="card card-body">
-            {% if comments %}
-            {% for comment in comments %}
-            <div class="row mb-3">
-                <div class="col-md-3 font-weight-bold">
-                    {{ comment.user.username }}
-                </div>
-                <div class="col-md-9">
-                    <p class="mb-1 text-justify">{{ comment.comment }}</p>
-                    <small class="text-muted">{{ comment.date|date:"d M Y, H:i" }}</small>
-                    <a class="text-info" href="#" onclick="toggleReplyForm({{ comment.id }}); return false;">Reply</a>
 
-                    <!-- Hiển thị các bình luận phản hồi -->
-                    {% for reply in comment.replies.all %}
-                    <div class="ml-4 mt-2">
-                        <strong>{{ reply.user.username }}</strong>: {{ reply.comment }}
-                        <small class="text-muted">{{ reply.date|date:"d M Y, H:i" }}</small>
-                    </div>
-                    {% endfor %}
+        <div class="custome">
+        <p><strong>Số người đã thích bài viết này: </strong>{{ post.likes.count }}</p>
+        <form action="{% url 'like_post' post.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="cus">
+                {% if request.user in post.likes.all %}
+                    <i class="fas fa-thumbs-down" style="margin-right: 8px;"></i> Unike
+                {% else %}
+                    <i class="fas fa-thumbs-up" style="margin-right: 8px;"></i> Like
+                {% endif %}
+            </button>
+        </form>
 
-                    <form method="POST" action="{% url 'post_detail' id=post.id %}" class="mt-2 d-none reply-form"
-                          id="reply-form-{{ comment.id }}">
-                        {% csrf_token %}
-                        {{ form.comment }}
-                        <input type="hidden" name="reply_id" value="{{ comment.id }}">
-                        <button class="btn btn-sm btn-primary" type="submit">Reply</button>
-                    </form>
-                </div>
-            </div>
-            <hr>
-            {% endfor %}
-            {% else %}
-            <p class="text-center text-muted">No comments yet. Be the first to comment!</p>
-            {% endif %}
-        </div>
     </div>
 
+    <!-- Thông báo -->
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% endif %} notification">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <!-- Thông báo -->
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="{% if message.tags %}{{ message.tags }}{% endif %} notification">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h3>Bình luận:</h3>#bắt đầu html comment đến hết
+
+    <div>
+        {% for comment in comments %}
+        <div>
+            <strong>{{ comment.user.username }}</strong>: {{ comment.comment }}
+            <small>{{ comment.date|date:"d M Y, H:i" }}</small>
+
+            <!-- Luôn hiển thị nút Reply cho tất cả bình luận -->
+            <a href="#" onclick="toggleReplyForm({{ comment.id }}); return false;">Reply</a>
+
+            <!-- Hiển thị các phản hồi -->
+            {% for reply in comment.replies.all %}
+            <div class="ml-4">
+                <strong>{{ reply.user.username }}</strong>: {{ reply.comment }}
+                <small>{{ reply.date|date:"d M Y, H:i" }}</small>
+
+                <!-- Luôn hiển thị nút Reply cho các phản hồi -->
+                <a href="#" onclick="toggleReplyForm({{ reply.id }}); return false;">Reply</a>
+                <div class="ml-4">
+                    {% for reply_of_reply in reply.replies.all %}
+                    <div>
+                        <strong>{{ reply_of_reply.user.username }}</strong>: {{ reply_of_reply.comment }}
+                        <small>{{ reply_of_reply.date|date:"d M Y, H:i" }}</small>
+
+                        <!-- Hiển thị nút Reply cho phản hồi của phản hồi -->
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Form trả lời cho phản hồi -->
+            <form method="POST" action="{% url 'post_detail' id=post.id %}" class="reply-form d-none"
+                  id="reply-form-{{ reply.id }}">
+                {% csrf_token %}
+                {{ form.comment }}
+                <input type="hidden" name="reply_id" value="{{ reply.id }}">
+                <button class="btn btn-sm btn-primary" type="submit">Reply</button>
+            </form>
+
+            {% endfor %}
+
+            <!-- Form trả lời cho bình luận gốc -->
+            <form method="POST" action="{% url 'post_detail' id=post.id %}" class="reply-form d-none"
+                  id="reply-form-{{ comment.id }}">
+                {% csrf_token %}
+                {{ form.comment }}
+                <input type="hidden" name="reply_id" value="{{ comment.id }}">
+                <button class="btn btn-sm btn-primary" type="submit">Reply</button>
+            </form>
+
+        </div>
+        <hr>
+        {% endfor %}
+    </div>
+
+    <!-- Form bình luận chính -->
     <form method="POST" class="mt-3">
         {% csrf_token %}
         {{ form.comment }}
@@ -98,10 +131,11 @@
     </form>
 
     <script>
- y       function toggleReplyForm(commentId) {
+        function toggleReplyForm(commentId) {
             const form = document.getElementById(`reply-form-${commentId}`);
             form.classList.toggle('d-none');
         }
     </script>
 </div>
 {% endblock %}
+

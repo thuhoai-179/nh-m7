@@ -136,11 +136,13 @@ def add_post(request):
         form = PostForm()
     return render(request, 'add_post.html', {'form': form})
 
-def post_detail(request,id):
+def post_detail(request, id):
     post = get_object_or_404(Post, id=id)
     post.view += 1
     post.save()
-    comments = post.comments()
+
+    # Comment Lấy danh sách bình luận gốc
+    comments = post.comments.filter(parent=None).order_by('-date')
 
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -148,18 +150,21 @@ def post_detail(request,id):
             comment = form.save(commit=False)
             comment.post = post
             comment.user = request.user
+
+            # Xử lý phản hồi
             reply_id = request.POST.get('reply_id')
-
             if reply_id:
-                comment.reply = Comment.objects.get(id=reply_id)
-            comment.save()
+                comment.parent = Comment.objects.get(id=reply_id)  # Lấy parent nếu có
 
+            comment.save()
             messages.success(request, 'Bình luận đã được thêm thành công!')
             return redirect('post_detail', id=post.id)
     else:
         form = CommentForm()
 
     return render(request, 'post_detail.html', {'post': post, 'comments': comments, 'form': form})
+
+
 
 @login_required
 def edit_post(request,id):
@@ -174,16 +179,28 @@ def edit_post(request,id):
     
     return render(request, "edit_post.html", {"form": form, "post": post})
 
+
 @login_required
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    if request.user in post.likes.all():
-        post.likes.remove(request.user)
-        liked = False
+
+    user = request.user  # Lấy thông tin người dùng hiện tại
+
+    if user in post.likes.all():
+        post.likes.remove(user)  # Nếu đã like, bỏ like
     else:
-        post.likes.add(request.user)
-        liked = True
-    return JsonResponse({'liked': liked, 'likes_count': post.likes.count()})
+        post.likes.add(user)  # Nếu chưa like, thêm like
+
+        # Gửi thông báo nếu người tạo bài viết không phải là người like
+        if post.user != user:
+            Notification.objects.create(
+                user=post.user,  # Người tạo bài viết sẽ nhận thông báo
+                post=post,
+                type="Like",
+                initiator=user  # Người thực hiện hành động
+            )
+    # Trả về kết quả dạng JSON
+    return redirect('post_detail', id=post.id)
 
 def category_post_list(request,id):
     category = get_object_or_404(Category, id=id)
@@ -331,3 +348,4 @@ class LikePostAPIView(APIView):
 
         except ValidationError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
